@@ -50,13 +50,13 @@ npm install --save-dev webpack-cli
 创建 `src` 目录，并创建 `src/index.js` 文件：
 
 ```js
-console.log('Hello Webpack');
+console.log('Hello Webpack')
 ``` 
 
 创建配置文件 `webpack.config.js`：
 
 ```js
-const path = require('path');
+const path = require('path')
 
 module.exports = {
     entry: './src/index.js',
@@ -65,7 +65,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     mode: 'development'
-};
+}
 ```
 
 `entry` 配置入口起点，`output` 配置输出路径以及输出文件名，`mode` 是 webpack4+ 针对目标环境的模式，可选值为 `development` 和 `production`。
@@ -126,8 +126,8 @@ npm install --save-dev style-loader css-loader
 修改 `webpack.config.js`：
 
 ```js
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     entry: './src/index.js',
@@ -153,7 +153,7 @@ module.exports = {
         })
     ],
     mode: 'development'
-};
+}
 ```
 
 添加样式文件 `src/style.css`：
@@ -175,14 +175,14 @@ module.exports = {
 在 `src/index.js` 中导入样式：
 
 ```js
-import './style.css';
+import './style.css'
 
-console.log('Hello Webpack');
+console.log('Hello Webpack')
 ```
 
 运行 `npm run build`，编译后打开 `dist/index.html`，打开后样式表被加载。如果打开调试器，能够看到在 `<head>` 标签里边注入了样式。
 
-![图片](./images/webpack/01.png)
+![图片](./images/webpack/inject-css.png)
 
 > 优化：使用 `MiniCssExtractPlugin` 分离 css 文件，参考后面 `plugins`
 
@@ -205,9 +205,9 @@ npm install --save-dev url-loader file-loader
 修改 `webpack.config.js`：
 
 ```js
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     entry: './src/index.js',
@@ -242,7 +242,7 @@ module.exports = {
         new MiniCssExtractPlugin()
     ],
     mode: 'development'
-};
+}
 ```
 
 当图片不超过10240Bytes，即10KB时，图片会被转成base64，当超过10KB时，则会在构建目录生成文件名追加哈希值的图片。
@@ -289,9 +289,9 @@ npm install --save-dev html-loader
 修改 `webpack.config.js`：
 
 ```js
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     entry: './src/index.js',
@@ -330,7 +330,7 @@ module.exports = {
         new MiniCssExtractPlugin()
     ],
     mode: 'development'
-};
+}
 ```
 
 在 `index.html` 中使用 `<img>`：
@@ -360,7 +360,7 @@ npm install --save-dev babel-loader @babel/core @babel/preset-env
 修改 `webpack.config.js`：
 
 ```js
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     // ...
@@ -381,7 +381,7 @@ module.exports = {
             template: 'index.html'
         })
     ]
-};
+}
 ```
 创建 `.babelrc` 或者 `.bable.config.json`：
 
@@ -405,6 +405,78 @@ babel 的详细用法参考后面的 Babel 文档或者官方文档：[https://w
 
 ### eslint
 
+1. 安装相关的包
+
+```sh
+npm install eslint eslint-loader eslint-friendly-formatter --save-dev
+```
+
+2. 修改 webpack 配置文件 `webpack.config.js`：
+
+```js
+const path = require('path')
+
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                loader: 'eslint-loader',
+                enforce: 'pre',
+                include: path.resolve(__dirname, 'src'),
+                options: {
+                    formatter: require('eslint-friendly-formatter')
+                }
+            }
+        ]
+    }
+}
+```
+
+3. 创建 `.eslintrc.js` 配置文件：
+
+```js
+module.exports = {
+    root: true,
+    parserOptions: {
+        parser: 'babel-eslint',
+        sourceType: 'module',
+        ecmaVersion: 11
+    },
+    env: {
+        browser: true
+    },
+    extends: ['eslint:recommended'],
+    rules: {
+        
+    }
+}
+```
+
+如果需要使用流行风格指南 `standard`，需要安装以下包：
+
+```sh
+npm install --save-dev "eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard
+```
+
+然后修改 `.eslintrc.js` 的 `extends` 选项：
+
+```js
+module.exports = {
+    // ...
+    extends: ['standard'],
+}
+```
+
+4. 创建 `.eslintignore` 文件，部分路径和文件不启用 eslint 检查：
+
+```sh
+/dist/
+/*.js
+```
+
+> 根目录下的配置相关的文件夹也应添加到该文件中
+
 ### vue
 
 ## plugins
@@ -424,8 +496,8 @@ npm install --save-dev html-webpack-plugin
 修改 `webpack.config.js`：
 
 ```js
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
     // ...
@@ -435,7 +507,7 @@ module.exports = {
             template: 'index.html'     // 用于编译的模板文件
         })
     ]
-};
+}
 ```
 
 修改 `index.html`：
@@ -454,6 +526,8 @@ module.exports = {
 
 之前使用 `style-loader` 和 `css-loader`加载 css 文件的方法， 将 css 文件内嵌到 `bundle.js` 中，只有加载脚本文件的时候，才会将样式表插入到页面中。这就意味着，当样式表或者脚本文件较大时，需要花时间等待脚本文件下载完，样式表才会生效。优化的办法是使用 `MiniCssExtractPlugin`， 分离 css 文件和 js 文件，让浏览器可以并发下载资源，不过也会增加请求数量（webpack3 使用 `ExtractTextWebpackPlugin`分离 css 文件，webpack4 以后使用 `MiniCssExtractPlugin` ）。
 
+> `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR），不需要担心打包后文件过大的问题。除此之外，在 loader 链中也不应该有 style-loader。
+
 参考文档：[https://webpack.js.org/plugins/mini-css-extract-plugin](https://webpack.js.org/plugins/mini-css-extract-plugin)
 
 安装 `mini-css-extract-plugin`：
@@ -465,8 +539,8 @@ npm install --save-dev mini-css-extract-plugin
 修改 `webpack.config.js`：
 
 ```js
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     // ...
@@ -497,7 +571,7 @@ module.exports = {
         new MiniCssExtractPlugin()
     ],
     mode: 'development'
-};
+}
 ```
 
 运行 `npm run build`，在 `dist`目录下生成 `main.css`，`dist/index.html` 文件在 `<head>` 标签中以 `<link>` 引入了样式表。
@@ -524,8 +598,8 @@ npm install --save-dev webpack-merge
 创建通用 webpack 配置文件 `webpack.common.js`：
 
 ```js
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
     entry: './src/js/index.js',
@@ -561,7 +635,7 @@ module.exports = {
             filename: 'css/[name].[hash:7].css'
         })
     ]
-};
+}
 ```
 
 通用配置包括入口文件，输出配置，加载 css，加载图片等。
@@ -570,9 +644,9 @@ module.exports = {
 创建开发环境配置文件 `webpack.dev.js`：
 
 ```js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
     plugins: [
@@ -582,15 +656,15 @@ module.exports = merge(common, {
         })
     ],
     mode: 'development'
-});
+})
 ```
 
 创建生产环境配置文件 `webpack.prod.js`：
 
 ```js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
     plugins: [
@@ -600,7 +674,7 @@ module.exports = merge(common, {
         })
     ],
     mode: 'production'
-});
+})
 ```
 
 ### mode
@@ -624,9 +698,9 @@ npm install --save-dev webpack-dev-server
 修改开发环境的配置文件 `webpack.dev.js`，告诉开发服务器在哪里查找文件：
 
 ```js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
     plugins: [
@@ -639,7 +713,7 @@ module.exports = merge(common, {
         contentBase: './dist'
     },
     mode: 'production'
-});
+})
 ```
 
 更多 `webpack-dev-server` 的配置参考官方文档：[https://webpack.js.org/configuration/dev-server/](https://webpack.js.org/configuration/dev-server/)
@@ -660,7 +734,7 @@ module.exports = merge(common, {
 
 当 webpack 打包源代码时，可能会很难追踪到错误和警告在源代码中的原始位置。为了更容易地追踪错误和警告，JavaScript 提供了 source map 功能，将编译后的代码映射回原始源代码。webpack 通过 `devtool` 属性来配置不同的 `source-map` 值。
 
-![图片](./images/webpack/02.png)
+![图片](./images/webpack/source-map.png)
 
 具体的 `source-map` 值可参考官方文档：[https://webpack.js.org/configuration/devtool/](https://webpack.js.org/configuration/devtool/)
 
@@ -669,9 +743,9 @@ module.exports = merge(common, {
 修改开发环境配置文件 `webpack.dev.js`：
 
 ```js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
     plugins: [
@@ -685,15 +759,15 @@ module.exports = merge(common, {
         contentBase: './dist'
     },
     mode: 'development'
-});
+})
 ```
 
 修改生产环境配置文件 `webpack.prod.js`：
 
 ```js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
     plugins: [
@@ -704,10 +778,94 @@ module.exports = merge(common, {
     ],
     devtool: 'source-map',
     mode: 'production'
-});
+})
 ```
 
-### 清理 dist 文件夹
+### 编译 CSS
+
+* 开发环境：使用 `css-loader` 和 `style-loader` 编译 CSS。
+
+* 生产环境：使用 `css-loader` 和 `MiniCssExtractPlugin` 编译CSS。`MiniCssExtractPlugin` 的详细用法参考 `plugin`。
+
+> `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR），不需要担心打包后文件过大的问题。除此之外，在 loader 链中，`style-loader` 和 `MiniCssExtractPlugin` 不能同时使用。
+
+修改通用配置文件 `webpack.common.js`：
+
+```js
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',    // MiniCssExtractPlugin.loader -> 'style-loader'
+                    'css-loader'
+                ]
+            }
+        ]
+    },
+    plugins: [
+        // 移除 MiniCssExtractPlugin 插件
+        // new MiniCssExtractPlugin({
+        //     filename: 'css/[name].[hash].css'
+        // })
+    ]
+}
+```
+
+修改开发环境配置文件 `webpack.dev.js`：
+
+```js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+module.exports = merge(common, {
+    module: {
+        // 添加 css loader
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            }
+        ]
+    },
+    mode: 'development'
+})
+```
+
+修改生产环境配置文件 `webpack.prod.js`：
+
+```js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+module.exports = merge(common, {
+    module: {
+        // 使用 MiniCssExtractPlugin.loader
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader'
+                ]
+            }
+        ]
+    },
+    plugins: [
+        // 添加 MiniCssExtractPlugin
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].[hash].css'
+        })
+    ],
+    mode: 'production'
+})
+```
+
+### 清理 dist 文件夹（生产环境）
 
 在构建生产环境时，会在 `dist` 目录下生成编译后的文件。假如我们删除 `src` 目录下的某些文件，再次编译后之前的代码仍会遗留在 `dist` 文件夹中，导致 `dist` 文件夹相当杂乱。比较推荐的做法是使用 `clean-webpack-plugin` 插件，每次构建前清理 `dist` 文件夹。
 
@@ -717,13 +875,13 @@ module.exports = merge(common, {
 npm install --save-dev clean-webpack-plugin
 ```
 
-修改生产环境配置文件 `webpack.prod.dev`：
+修改生产环境配置文件 `webpack.prod.js`：
 
 ```js
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = merge(common, {
     plugins: [
@@ -735,7 +893,223 @@ module.exports = merge(common, {
     ],
     devtool: 'source-map',
     mode: 'production'
-});
+})
 ```
 
 `clean-webpack-plugin` 的详细配置参考：[https://www.npmjs.com/package/clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin)。
+
+### 模块热替换（HMR）（开发环境）
+
+在构建开发环境时，模块热替换允许在运行时更新各种模块，而无需进行完全刷新。
+
+修改 开发环境配置文件 `webpack.dev.js`：
+
+```js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const webpack = require('webpack')
+
+module.exports = merge(common, {
+    plugins: [
+        new webpack.HotModuleReplacementPlugin()    // 引入 HMR 插件
+    ],
+    devServer: {
+        contentBase: './dist',
+        hot: true    // webpack-dev-server 的 hot 选项设置为true
+    },
+    mode: 'development'
+})
+```
+
+### 打包分析器（webpack-bundle-analyzer）（生产环境）
+
+`webpack-bundle-analyzer` 插件可以将打包后的结果以矩形树图的方式进行可视化显示，方便我们进行模块分析和性能优化。
+
+详细用法参考：[https://github.com/webpack-contrib/webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
+
+![图片](./images/webpack/bundle-analyzer.gif)
+
+1. 安装插件
+
+```sh
+npm install webpack-bundle-analyzer --save-dev
+```
+
+2. 在生产环境配置文件 `webpack.prod.js` 中引入插件，为此，需要区分配置定义和导出
+
+```js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+// 抽离配置定义
+const webpackConfig = merge(common, {
+    // ...
+    mode: 'production'
+})
+
+// npm run build --report（按需启用，当指定 --report 参数时启用插件）
+if (process.env.npm_config_report) {
+    const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+    webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+}
+
+// 导出
+module.exports = webpackConfig
+```
+
+3.运行编译命令
+
+```sh
+npm run build --report
+```
+
+编译后自动打开分析页面，可以直观看到各个模块打包后的相对大小，我们就可以有针对性地对模块进行优化。除此之外，还能看到各个模块代码的原始大小（stat）、编译后的大小（parsed）以及压缩后的大小（Gzipped）。
+
+## 浏览器缓存
+
+浏览器具有缓存技术，会将访问过的网页资源（例如 css 文件、js 文件以及图片等）缓存到本地，下次访问网页的相同资源时，就会使用缓存，减少网络请求，加快页面加载速度。缓存技术的存在，对提升网页加载性能是有利的，但是对我们更新代码就不那么友好了。我们更新了代码，由于浏览器缓存，用户浏览到的仍然是旧版本的页面。
+
+### 文件名哈希值
+
+每次更新代码时，通过对打包的文件名追加 `hash`，使得文件名与之前不一致，浏览器就不会因为缓存而忽略更新。
+
+在 webpack 中，有三种类型的 `hash`，分别是 `[hash]`、`[chunkhash]` 和 `[contenthash]`
+
+* `[hash]`
+
+`[hash]` 是项目级别的，即同一个项目中的所有文件共用一个哈希值，这就产生一个问题，假如只修改某一个文件，所有文件名的哈希值都会更新，每次更新后，浏览器缓存都会失效，用户就要访问重新所有资源，网页的性能因此下降。
+
+
+```js
+// webpack.common.js
+const path = require('path')
+
+module.exports = {
+    entry: './src/js/index.js',
+    output: {
+        filename: 'js/[name].[hash].js',    // hash
+        path: path.resolve(__dirname, 'dist')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(png|svg|jpe?g|gif)$/,
+                loaders: 'url-loader',
+                options: {
+                    limit: 10240,
+                    name: 'img/[name].[hash].[ext]'    // hash
+                }
+            }
+        ]
+    }
+}
+```
+
+```js
+// webpack.prod.js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+module.exports = merge(common, {
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].[hash].css'    // hash
+        })
+    ],
+    mode: 'production'
+})
+```
+
+* `[chunkhash]` 根据不同的入口文件进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。这样不同的文件就会生成不同的哈希值，只更新一个文件，不会影响其他文件的缓存。
+
+```js
+// webpack.common.js
+const path = require('path')
+
+module.exports = {
+    entry: './src/js/index.js',
+    output: {
+        filename: 'js/[name].[hash].js',    // hash
+        path: path.resolve(__dirname, 'dist')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(png|svg|jpe?g|gif)$/,
+                loaders: 'url-loader',
+                options: {
+                    limit: 10240,
+                    name: 'img/[name].[chunkhash].[ext]'    // chunkhash
+                }
+            }
+        ]
+    }
+}
+```
+
+```js
+// webpack.prod.js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+module.exports = merge(common, {
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].[chunkhash].css'    // chunkhash
+        })
+    ],
+    mode: 'production'
+})
+```
+
+> 注意： 在 `webpack.common.js` 中，`output.filename` 仍然保留 `[hash]`，这是因为开发环境中的 `HotModuleReplacementPlugin` 插件会和 `chunkhash` 冲突。
+
+`[chunkname]` 仍然有个问题，如果将 css 文件导入到 js 文件中，修改 js 文件，css 文件的哈希值也都会变化，没有起到缓存的作用。
+
+* `[contenthash]`
+
+`[contenthash]` 是针对文件内容级别的，只有当前模块的内容变了，哈希值才会改变。
+
+综合例子：
+
+```js
+// webpack.common.js
+const path = require('path')
+
+module.exports = {
+    entry: './src/js/index.js',
+    output: {
+        filename: 'js/[name].[hash].js',    // hash
+        path: path.resolve(__dirname, 'dist')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.(png|svg|jpe?g|gif)$/,
+                loaders: 'url-loader',
+                options: {
+                    limit: 10240,
+                    name: 'img/[name].[chunkhash].[ext]'    // chunkhash
+                }
+            }
+        ]
+    }
+}
+```
+
+```js
+// webpack.prod.js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+module.exports = merge(common, {
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].[contenthash].css'    // contenthash
+        })
+    ],
+    mode: 'production'
+})
+```
+
+针对生产环境中的 `MiniCssExtractPlugin` 插件，编译 css 代码时，使用 `[contenthash]`。
