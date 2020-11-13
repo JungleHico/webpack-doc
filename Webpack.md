@@ -1020,7 +1020,7 @@ module.exports = merge(common, {
 })
 ```
 
-* `[chunkhash]` 根据不同的入口文件进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。这样不同的文件就会生成不同的哈希值，只更新一个文件，不会影响其他文件的缓存。
+* `[chunkhash]` 根据不同的入口文件进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。这样不同的文件就会生成不同的哈希值，只更新一个文件，不会影响其他文件的缓存（这种说法并不准确，下面会说明）。
 
 ```js
 // webpack.common.js
@@ -1112,4 +1112,98 @@ module.exports = merge(common, {
 })
 ```
 
-针对生产环境中的 `MiniCssExtractPlugin` 插件，编译 css 代码时，使用 `[contenthash]`。
+针对生产环境中的 `MiniCssExtractPlugin` 插件，编译 css 代码时，使用 `[contenthash]`。这样，修改某个 js 文件，只改变对应模块的哈希值，该 js 文件引入的 css 文件的哈希值不会改变。
+
+### 提取模板/代码分离（生产环境）
+
+通常我们的项目中会包含三种类型的代码：
+
+* 自己或者团队编写的业务代码
+
+* 第三方库，例如 lodash 和 vue
+
+* webpack 的 runtime 和 manifest，管理所有模块的交互
+
+#### Runtime 
+> runtime，以及伴随的 manifest 数据，主要是指：在浏览器运行时，webpack 用来连接模块化的应用程序的所有代码。runtime 包含：在模块交互时，连接模块所需的加载和解析逻辑。包括浏览器中的已加载模块的连接，以及懒加载模块的执行逻辑。
+
+#### Manifest
+> 当编译器(compiler)开始执行、解析和映射应用程序时，它会保留所有模块的详细要点。这个数据集合称为 "Manifest"，当完成打包并发送到浏览器时，会在运行时通过 Manifest 来解析和加载模块。无论你选择哪种模块语法，那些 import 或 require 语句现在都已经转换为 `__webpack_require__` 方法，此方法指向模块标识符(module identifier)。通过使用 manifest 中的数据，runtime 将能够查询模块标识符，检索出背后对应的模块。
+
+在实际开发中，项目中的第三方库基本是不会变化的。然而，webpack 默认会把业务代码，manifest 和 第三方库代码打包到同一个文件中，我们修改业务代码的时候，整个文件重新编译，缓存也会失效，浏览器需要重新下载整个文件，性能比较低。因此，我们一般会把 manifest 和 第三方库提取到单独的文件中。
+
+#### 代码分离之前
+
+为了测试，首先，安装和引入第三方组件库 `lodash`：
+
+```sh
+npm install --save-dev lodash
+```
+
+```js
+// src/js/index.js
+import '../css/style.css'
+import _ from 'lodash'
+
+console.log('Hello Webpack')
+console.log(_.findIndex([1, 2, 3], item => item === 3))
+```
+
+运行 `npm run build` 命令，可以看到打包信息：
+
+![图片](./images/webpack/code-splitting-01.png)
+
+js 代码都打包到 `main.xxx.js` 一个文件中，并且 `Chunk Names` 只有 `main`。
+
+#### 代码分离
+
+首先，指定 `optimization.runtimeChunk` 为 `'single'`，提取 `manifest` 模板：
+
+```js
+// webpack.prod.js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+const webpackConfig = merge(common, {
+    optimization: {
+        runtimeChunk: 'single'
+    },
+    mode: 'production'
+})
+
+module.exports = webpackConfig
+```
+
+然后，配置 `optimization.splitChunks.cacheGroups` 分离第三方库代码：
+
+```js
+// webpack.prod.js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+const webpackConfig = merge(common, {
+    optimization: {
+        runtimeChunk: 'single',
+        splitChunks: {
+            cacheGroups: {
+                vender: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'venders',
+                    chunks: 'all'
+                }
+            }
+        }
+    },
+    mode: 'production'
+})
+
+module.exports = webpackConfig
+```
+
+运行 `npm run build`。
+
+![图片](./images/webpack/code-splitting-02.png)
+
+可以看到，打包后的 js 代码包含 `main.xxx.js`（业务代码）、`runtime.xxx.js`（runtime 代码）和 `venders.xxx.js`（第三方库代码）， `Chunk Names` 也包含了 `main`、`runtime` 和 `venders`，说明已经实现了代码分离。
+
+> webpack4 以后，使用 `optimization.splitChunks` 来分离代码，webpack4 以前，使用 `CommonsChunkPlugin` 插件来实现，参考 [https://www.webpackjs.com/guides/caching/](https://www.webpackjs.com/guides/caching/)
