@@ -785,7 +785,7 @@ module.exports = merge(common, {
 
 * 开发环境：使用 `css-loader` 和 `style-loader` 编译 CSS。
 
-* 生产环境：使用 `css-loader` 和 `MiniCssExtractPlugin` 编译CSS。`MiniCssExtractPlugin` 的详细用法参考 `plugin`。
+* 生产环境：使用 `css-loader` 和 `MiniCssExtractPlugin` 编译CSS。`MiniCssExtractPlugin` 的详细用法参考 `plugins`。
 
 > `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR），不需要担心打包后文件过大的问题。除此之外，在 loader 链中，`style-loader` 和 `MiniCssExtractPlugin` 不能同时使用。
 
@@ -1143,10 +1143,10 @@ npm install --save-dev lodash
 ```js
 // src/js/index.js
 import '../css/style.css'
-import _ from 'lodash'
+import { indexOf } from 'lodash'
 
 console.log('Hello Webpack')
-console.log(_.findIndex([1, 2, 3], item => item === 3))
+console.log(indexOf([1, 2, 3], 2))
 ```
 
 运行 `npm run build` 命令，可以看到打包信息：
