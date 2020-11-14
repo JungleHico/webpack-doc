@@ -1023,31 +1023,6 @@ module.exports = merge(common, {
 * `[chunkhash]` 根据不同的入口文件进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。这样不同的文件就会生成不同的哈希值，只更新一个文件，不会影响其他文件的缓存（这种说法并不准确，下面会说明）。
 
 ```js
-// webpack.common.js
-const path = require('path')
-
-module.exports = {
-    entry: './src/js/index.js',
-    output: {
-        filename: 'js/[name].[hash].js',    // hash
-        path: path.resolve(__dirname, 'dist')
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loaders: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: 'img/[name].[chunkhash].[ext]'    // chunkhash
-                }
-            }
-        ]
-    }
-}
-```
-
-```js
 // webpack.prod.js
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
@@ -1062,9 +1037,9 @@ module.exports = merge(common, {
 })
 ```
 
-> 注意： 在 `webpack.common.js` 中，`output.filename` 仍然保留 `[hash]`，这是因为开发环境中的 `HotModuleReplacementPlugin` 插件会和 `chunkhash` 冲突。
+> 注意： 在 `webpack.common.js` 中，`output.filename` 仍然保留 `[hash]`，这是因为开发环境中的 `HotModuleReplacementPlugin` 插件会和 `chunkhash` 冲突。除此之外，`[chunkhash]` 只适用于 js 和 css，对图片不生效，所以 `url-loader` 中也保留 `[hash]`
 
-`[chunkname]` 仍然有个问题，如果将 css 文件导入到 js 文件中，修改 js 文件，css 文件的哈希值也都会变化，没有起到缓存的作用。
+`[chunkhash]` 仍然有个问题，如果将 css 文件导入到 js 文件中，修改 js 文件，css 文件的哈希值也都会变化，没有起到缓存的作用。
 
 * `[contenthash]`
 
@@ -1089,7 +1064,7 @@ module.exports = {
                 loaders: 'url-loader',
                 options: {
                     limit: 10240,
-                    name: 'img/[name].[chunkhash].[ext]'    // chunkhash
+                    name: 'img/[name].[hash].[ext]'    // hash
                 }
             }
         ]
