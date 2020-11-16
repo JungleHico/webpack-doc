@@ -781,13 +781,46 @@ module.exports = merge(common, {
 })
 ```
 
+### 清理 dist 文件夹（生产环境）
+
+在构建生产环境时，会在 `dist` 目录下生成编译后的文件。假如我们删除 `src` 目录下的某些文件，再次编译后之前的代码仍会遗留在 `dist` 文件夹中，导致 `dist` 文件夹相当杂乱。比较推荐的做法是使用 `clean-webpack-plugin` 插件，每次构建前清理 `dist` 文件夹。
+
+安装 `clean-webpack-plugin` 插件：
+
+```bash
+npm install --save-dev clean-webpack-plugin
+```
+
+修改生产环境配置文件 `webpack.prod.js`：
+
+```js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = merge(common, {
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'index.html'
+        })
+    ],
+    devtool: 'source-map',
+    mode: 'production'
+})
+```
+
+`clean-webpack-plugin` 的详细配置参考：[https://www.npmjs.com/package/clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin)。
+
 ### 编译 CSS
 
 * 开发环境：使用 `css-loader` 和 `style-loader` 编译 CSS。
 
 * 生产环境：使用 `css-loader` 和 `MiniCssExtractPlugin` 编译CSS。`MiniCssExtractPlugin` 的详细用法参考 `plugins`。
 
-> `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR），不需要担心打包后文件过大的问题。除此之外，在 loader 链中，`style-loader` 和 `MiniCssExtractPlugin` 不能同时使用。
+> `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR）（见下），不需要担心打包后文件过大的问题。除此之外，在 loader 链中，`style-loader` 和 `MiniCssExtractPlugin` 不能同时使用。
 
 修改通用配置文件 `webpack.common.js`：
 
@@ -865,38 +898,59 @@ module.exports = merge(common, {
 })
 ```
 
-### 清理 dist 文件夹（生产环境）
+### 最小化 css 代码（生产环境）
 
-在构建生产环境时，会在 `dist` 目录下生成编译后的文件。假如我们删除 `src` 目录下的某些文件，再次编译后之前的代码仍会遗留在 `dist` 文件夹中，导致 `dist` 文件夹相当杂乱。比较推荐的做法是使用 `clean-webpack-plugin` 插件，每次构建前清理 `dist` 文件夹。
+对于生产环境的 css，我们除了移除重复代码，还应该最小化/压缩 css 代码，移除空格和换行符，减少代码体积。 
 
-安装 `clean-webpack-plugin` 插件：
+webpack4 以后，使用 `css-minimizer-webpack-plugin` 插件来最小化 css 代码。
 
-```bash
-npm install --save-dev clean-webpack-plugin
+详细用法参考：[https://webpack.js.org/plugins/css-minimizer-webpack-plugin/](https://webpack.js.org/plugins/css-minimizer-webpack-plugin/)
+
+首先，安装插件：
+
+```sh
+npm install css-minimizer-webpack-plugin --save-dev
 ```
 
-修改生产环境配置文件 `webpack.prod.js`：
+修改生产环境配置文件，指定 `optimization.minimizer`：
 
 ```js
+// webpack.prod.js
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
-module.exports = merge(common, {
+const webpackConfig = merge(common, {
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader'
+                ]
+            }
+        ]
+    },
     plugins: [
-        new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].[contenthash].css'
         })
     ],
-    devtool: 'source-map',
+    optimization: {
+        minimizer: [
+            new CssMinimizerPlugin() 
+        ]
+    },
     mode: 'production'
 })
+
+module.exports = webpackConfig
 ```
 
-`clean-webpack-plugin` 的详细配置参考：[https://www.npmjs.com/package/clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin)。
+> 在 webpack3 中，使用 `optimize-css-assets-webpack-plugin` 插件来最小化 css 代码。
+
 
 ### 模块热替换（HMR）（开发环境）
 
