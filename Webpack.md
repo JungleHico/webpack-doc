@@ -912,7 +912,7 @@ webpack4 以后，使用 `css-minimizer-webpack-plugin` 插件来最小化 css �
 npm install css-minimizer-webpack-plugin --save-dev
 ```
 
-修改生产环境配置文件，指定 `optimization.minimizer`：
+修改生产环境配置文件，引入插件：
 
 ```js
 // webpack.prod.js
@@ -936,21 +936,16 @@ const webpackConfig = merge(common, {
     plugins: [
         new MiniCssExtractPlugin({
             filename: 'css/[name].[contenthash].css'
-        })
+        }),
+        new CssMinimizerPlugin()
     ],
-    optimization: {
-        minimizer: [
-            new CssMinimizerPlugin() 
-        ]
-    },
     mode: 'production'
 })
 
 module.exports = webpackConfig
 ```
 
-> 在 webpack3 中，使用 `optimize-css-assets-webpack-plugin` 插件来最小化 css 代码。
-
+> 注意：在 webpack3 中，使用 `optimize-css-assets-webpack-plugin` 插件来最小化 css 代码。
 
 ### 模块热替换（HMR）（开发环境）
 
@@ -1236,3 +1231,7 @@ module.exports = webpackConfig
 可以看到，打包后的 js 代码包含 `main.xxx.js`（业务代码）、`runtime.xxx.js`（runtime 代码）和 `venders.xxx.js`（第三方库代码）， `Chunk Names` 也包含了 `main`、`runtime` 和 `venders`，说明已经实现了代码分离。
 
 > webpack4 以后，使用 `optimization.splitChunks` 来分离代码，webpack4 以前，使用 `CommonsChunkPlugin` 插件来实现，参考 [https://www.webpackjs.com/guides/caching/](https://www.webpackjs.com/guides/caching/)
+
+## externals 引入 cdn 资源
+
+测试性能是否优化
