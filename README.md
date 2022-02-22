@@ -20,7 +20,7 @@ npm install --save-dev webpack
 npm install --save-dev webpack@<version>
 ```
 
-如果使用 webpack4+，还需要安装 CLI：
+如果使用 webpack4+，还需要安装 `webpack-cli`：
 
 ```
 npm install --save-dev webpack-cli
@@ -109,9 +109,11 @@ npm run build
 
 ## 多入口文件（详解entry和output）
 
+待补充
+
 ## modules 和 loader
 
-webpack 通过 loader 可以支持各种语言和预处理器编写模块。loader 描述了 webpack 如何处理非 JavaScript 模块。
+webpack默认只支持编译 js 模块，而通过 loader，webpack 可以支持各种语言和预处理器编写模块。
 
 > 注意：使用 loader 解析文件之前，请先查看 plugins-HtmlWebpackPlugin 部分，并使用 `html-webpack-plugin` 插件。
 
@@ -186,13 +188,77 @@ console.log('Hello Webpack')
 
 > 优化：使用 `MiniCssExtractPlugin` 分离 css 文件，参考后面 `plugins`
 
-### sass/less
+### less/scss
+
+以 less 为例，配置 css 预处理器对应的 loader
+
+首先，安装对应的预处理器和 loader：
+
+```sh
+npm install --save-dev less@3.0.4 less-loader@5.0.0
+```
+
+建议安装 `less-loader` 时指定版本，高版本可能报错
+
+修改 webpack 配置文件：
+
+```js
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'less-loader'
+                ]
+            }
+        ]
+    }
+}
+```
+
+添加样式文件 `src/style.less`，使用嵌套语法：
+
+```css
+h1 {
+    &.color-green {
+        color: #00ff00;
+    }
+}
+```
+
+修改 `index.html`：
+
+```html
+<body>
+    <h1 class="color-red">Webpack</h1>
+    <h1 class="color-green">less</h1>
+</body>
+```
+
+在 `src/index.js` 中导入样式：
+
+```js
+import './style.css'
+import './style.less'
+```
+
+> 优化：使用 `MiniCssExtractPlugin` 分离 css 文件，参考后面 `plugins`
 
 ### images（url-loader/file-loader + html-loader）
 
 #### url-loader/file-loader
 
-`url-loader` 可以将图片资源转化为 base64 并引用，性能会优于直接引用图片。但是，当图片较大时，编码的性能下降，就需要改成引用图片，此时 `url-loader` 会调用 `file-loader` （需安装）加载图片。
+`url-loader` 可以将图片资源转化为 base64 并引用，减少页面请求图片资源的次数，从而提高页面的性能。但是，当图片较大时，编码的性能下降，就需要改成引用图片，此时 `url-loader` 会调用 `file-loader` （需安装）加载图片。
 
 详细用法参考官方文档：[https://webpack.js.org/loaders/url-loader/](https://webpack.js.org/loaders/url-loader/)
 
@@ -247,7 +313,7 @@ module.exports = {
 
 当图片不超过10240Bytes，即10KB时，图片会被转成base64，当超过10KB时，则会在构建目录生成文件名追加哈希值的图片。
 
-修改 `index.html` 和 `rc/style.css`：
+修改 `index.html` 和 `src/style.css`：
 
 ```html
 <body>
@@ -347,11 +413,11 @@ module.exports = {
 编译后 `dist/index.html` 中的 `<img>` 的 `src` 属性引用了 base64 格式的图片（不超过10KB），或者引用在 `dist` 中生成的图片。
 
 
-### babel
+### Babel
 
-Babel是一个JavaScript的编译器，可以将ES6的代码转化为浏览器支持的JavaScript代码（通常是ES5），从而在现有环境中运行。这就意味着，我们可以使用ES6编写程序，而不依赖于浏览器是否支持。
+Babel 是一个 JavaScript 的编译器，可以将 ES6 的代码转化为浏览器支持的 JavaScript 代码（通常是 ES5），从而在现有环境中运行。这就意味着，我们可以使用 ES6 的高级语法编写程序，而不依赖于浏览器是否支持。
 
-安装 babel：
+1.安装
 
 ```bash
 npm install --save-dev babel-loader @babel/core @babel/preset-env
@@ -370,9 +436,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,    // 排除node_modules目录
-                use: {
-                    loader: 'babel-loader'
-                }
+                use: 'babel-loader'
             }
         ]
     },
@@ -383,25 +447,52 @@ module.exports = {
     ]
 }
 ```
-创建 `.babelrc` 或者 `.bable.config.json`：
 
-```json
-{
-    "presets": [
+2.配置
+
+创建 `babel.config.js` 配置文件：
+
+```js
+module.exports = {
+    presets: ['@babel/preset-env']
+}
+```
+
+`@babel/preset-env` 是 Babel 提供的编译 ES6 的常用预设
+
+> 注意：`babel.config.js` 和 `.babelrc` 配置文件的区别：
+`babel.config.js` 是作用于当前项目的全局配置
+`babelrc` 是只作用于当前路径的局部配置
+
+3.polyfill
+
+ES6 可以分为新语法和新的 API，`let`、`const`、箭头函数，解构赋值等都属于新语法，新增的对象或者新增的方法属于新的 API，例如 `Promise` 对象，`Array.includes()` 方法。Babel 默认只会转换新语法，不会转换新的API，新的 API 一般是通过引入 `polyfill` 来兼容环境。
+
+安装 core-js：
+
+```sh
+npm install core-js --save
+```
+
+修改 `babel.config.js`：
+
+```js
+module.exports = {
+    presets: [
         [
-            "@babel/env",
+            '@babel/preset-env',
             {
-                "debug": true,
-                "targets": "> 1%, last 2 versions, not ie <= 8",
-                "useBuiltIns": "usage",
-                "corejs": 3
+                useBuiltIns: 'usage', // 可选值 'entry' | 'usage'，'usage' 表示按需注入
+                corejs: 3
             }
         ]
     ]
 }
 ```
 
-babel 的详细用法参考后面的 Babel 文档或者官方文档：[https://www.babeljs.cn/](https://www.babeljs.cn/)
+> Babel7.4 以后使用 `useBuiltIns` 代替 `@babel/polyfill` 来实现 ES6 新 API 的注入
+
+Babel 的详细用法参考后面的 Babel 文档或者官方文档：[https://www.babeljs.cn/](https://www.babeljs.cn/)
 
 ### eslint
 
@@ -477,8 +568,6 @@ module.exports = {
 
 > 根目录下的配置相关的文件夹也应添加到该文件中
 
-### vue
-
 ## plugins
 
 插件是 webpack 的支柱功能，用于解决 loader 无法实现的其他事。
@@ -503,8 +592,8 @@ module.exports = {
     // ...
     plugins: [
         new HtmlWebpackPlugin({
-            filename: 'index.html',    // 编译后输出的文件名
-            template: 'index.html'     // 用于编译的模板文件
+            template: 'index.html', // 用于编译的模板文件
+            filename: 'index.html'  // 编译后输出的文件名       
         })
     ]
 }
@@ -712,7 +801,7 @@ module.exports = merge(common, {
     devServer: {
         contentBase: './dist'
     },
-    mode: 'production'
+    mode: 'development'
 })
 ```
 
@@ -776,7 +865,7 @@ module.exports = merge(common, {
             template: 'index.html'
         })
     ],
-    devtool: 'source-map',
+    devtool: 'nosources-source-map',
     mode: 'production'
 })
 ```
@@ -1234,4 +1323,29 @@ module.exports = webpackConfig
 
 ## externals 引入 cdn 资源
 
-测试性能是否优化
+webpack 中，我们使用框架或第三方插件，通常是通过 npm 安装之后，然后 `import` 导入，这样，这些代码库也会被打包到我们的项目中，导致打包后的文件过大。
+
+webpack 中，我们通过 `externals` 属性，以外部扩展的形式引入代码库，这样就可以通过 CDN 进行加速了。
+
+以分离 vue 和 vue-router 为例：
+
+首先，在 `index.html` 中引入对应版本的 CDN 资源：
+
+```html
+<body>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.1/dist/vue-router.min.js"></script>
+</body>
+```
+
+修改 webpack 配置文件：
+
+```js
+module.exports = {
+    externals: {
+        vue: 'Vue',
+        'vue-router': 'VueRouter'
+    }
+}
+```
