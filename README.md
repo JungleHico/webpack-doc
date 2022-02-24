@@ -2,7 +2,7 @@
 
 webpack 是一个现代 JavaScript 应用程序的静态模块打包器。
 
-## 快速上手
+## 1. 快速上手
 
 ### 安装
 
@@ -20,11 +20,13 @@ npm install --save-dev webpack
 npm install --save-dev webpack@<version>
 ```
 
-如果使用 webpack4+，还需要安装 `webpack-cli`：
+webpack 4+，需要安装 `webpack-cli`：
 
 ```
 npm install --save-dev webpack-cli
 ```
+
+
 
 ### 配置
 
@@ -36,13 +38,13 @@ npm install --save-dev webpack-cli
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webpack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webpack</title>
 </head>
 <body>
     
-    <script src="./src/index.js"></script>
+  <script src="./src/index.js"></script>
 </body>
 </html>
 ```
@@ -51,7 +53,7 @@ npm install --save-dev webpack-cli
 
 ```js
 console.log('Hello Webpack')
-``` 
+```
 
 创建配置文件 `webpack.config.js`：
 
@@ -59,27 +61,27 @@ console.log('Hello Webpack')
 const path = require('path')
 
 module.exports = {
-    entry: './src/index.js',
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    mode: 'development'
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  },
+  mode: 'development'
 }
 ```
 
-`entry` 配置入口起点，`output` 配置输出路径以及输出文件名，`mode` 是 webpack4+ 针对目标环境的模式，可选值为 `development` 和 `production`。
+`entry` 配置入口起点，`output` 配置输出路径以及输出文件名，`mode` 是 webpack 4+ 针对目标环境的模式，可选值为 `'development' | 'production' | none`。
+
+
 
 ### 运行
 
 在 `packjage.json` 的 `scripts` 中配置运行命令：
 
 ```json
-{
-    "scripts": {
-        "build": "webpack"
-    }
-}
+  "scripts": {
+    "build": "webpack"
+  }
 ```
 
 运行命令：
@@ -88,7 +90,7 @@ module.exports = {
 npm run build
 ```
 
-可以看到编译后生成了 `dist` 目录，以及 `dist/bundle.js` 文件。
+编译后生成了 `dist` 目录，以及 `dist/bundle.js` 文件。
 
 替换 `index.html` 中的引用的脚本文件，并在浏览器中打开，打开调试器，正常运行。
 
@@ -96,28 +98,28 @@ npm run build
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webpack</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webpack</title>
 </head>
 <body>
     
-    <script src="./dist/bundle.js"></script>
+  <script src="./dist/bundle.js"></script>
 </body>
 </html>
 ```
 
-## 多入口文件（详解entry和output）
 
-待补充
 
-## modules 和 loader
+## 2. modules 和 loader
 
 webpack默认只支持编译 js 模块，而通过 loader，webpack 可以支持各种语言和预处理器编写模块。
 
-> 注意：使用 loader 解析文件之前，请先查看 plugins-HtmlWebpackPlugin 部分，并使用 `html-webpack-plugin` 插件。
+> 使用 loader 解析文件之前，请先查看 plugins-HtmlWebpackPlugin 部分，并使用 `html-webpack-plugin` 插件。
 
-### 加载css
+
+
+### 加载 css
 
 安装 `style-loader` 和 `css-loader`：
 
@@ -127,42 +129,41 @@ npm install --save-dev style-loader css-loader
 
 修改 `webpack.config.js`：
 
-```js
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+```diff
+  const path = require('path')
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = {
+  module.exports = {
     entry: './src/index.js',
     output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
     },
-    module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ]
-            }
-        ]
-    },
++   module: {
++     rules: [
++       {
++         test: /\.css$/,
++         use: ['style-loader', 'css-loader']
++       }
++     ]
++   },
     plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
+      new HtmlWebpackPlugin({
+        template: 'index.html', // 用于编译的模板文件
+        filename: 'index.html'  // 编译后输出的文件名
+      })
     ],
     mode: 'development'
-}
+  }
 ```
+
+> loader 的加载顺序是从后往前，而 `style-loader` 基于 `css-loader` ，所以 `css-loader` 需要写在 `style-laoder` 后面。
 
 添加样式文件 `src/style.css`：
 
 ```css
 .color-red {
-    color: #ff0000;
+  color: #ff0000;
 }
 ```
 
@@ -170,23 +171,25 @@ module.exports = {
 
 ```html
 <body>
-    <h1 class="color-red">Webpack</h1>
+  <h1 class="color-red">Webpack</h1>
 </body>
 ```
 
 在 `src/index.js` 中导入样式：
 
-```js
-import './style.css'
+```diff
++ import './style.css'
 
-console.log('Hello Webpack')
+  console.log('Hello Webpack')
 ```
 
 运行 `npm run build`，编译后打开 `dist/index.html`，打开后样式表被加载。如果打开调试器，能够看到在 `<head>` 标签里边注入了样式。
 
-![图片](./images/webpack/inject-css.png)
+![图片](./docs/images/webpack/inject-css.png)
 
-> 优化：使用 `MiniCssExtractPlugin` 分离 css 文件，参考后面 `plugins`
+> 优化：使用 `MiniCssExtractPlugin` 分离 css 文件，参考后面 `plugins` 。
+
+
 
 ### less/scss
 
@@ -202,37 +205,34 @@ npm install --save-dev less@3.0.4 less-loader@5.0.0
 
 修改 webpack 配置文件：
 
-```js
-module.exports = {
+```diff
+  module.exports = {
     module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ]
-            },
-            {
-                test: /\.less$/,
-                use: [
-                    'style-loader',
-                    'css-loader',
-                    'less-loader'
-                ]
-            }
-        ]
+      rules: [
+        {
+          test: /\.css$/,
+          use: ['style-loader','css-loader']
+        },
++       {
++         test: /\.less$/,
++         use: [
++           'style-loader',
++           'css-loader',
++           'less-loader'
++         ]
++       }
+      ]
     }
-}
+  }
 ```
 
 添加样式文件 `src/style.less`，使用嵌套语法：
 
 ```css
 h1 {
-    &.color-green {
-        color: #00ff00;
-    }
+  &.color-green {
+    color: #00ff00;
+  }
 }
 ```
 
@@ -240,8 +240,8 @@ h1 {
 
 ```html
 <body>
-    <h1 class="color-red">Webpack</h1>
-    <h1 class="color-green">less</h1>
+  <h1 class="color-red">Webpack</h1>
+  <h1 class="color-green">less</h1>
 </body>
 ```
 
@@ -254,11 +254,48 @@ import './style.less'
 
 > 优化：使用 `MiniCssExtractPlugin` 分离 css 文件，参考后面 `plugins`
 
-### images（url-loader/file-loader + html-loader）
 
-#### url-loader/file-loader
 
-`url-loader` 可以将图片资源转化为 base64 并引用，减少页面请求图片资源的次数，从而提高页面的性能。但是，当图片较大时，编码的性能下降，就需要改成引用图片，此时 `url-loader` 会调用 `file-loader` （需安装）加载图片。
+### 图片
+
+#### CSS 背景图片或者 JS 图片对象
+
+##### 定义背景图片
+
+```html
+<!-- index.html -->
+<body>
+  <div class="logo logo-1"></div>
+  <div class="logo logo-2"></div>
+</body>
+```
+
+```css
+/* src/style.css */
+.logo {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.logo-1 {
+  width: 50px;
+  height: 50px;
+  /* 背景图片（小于10KB） */
+  background-image: url('./assets/img/logo1.png');
+}
+.logo-2 {
+  width: 275px;
+  height: 117px;
+  /* 背景图片（大于10KB） */
+  background-image: url('./assets/img/logo2.jpeg');
+}
+```
+
+
+
+##### webpack 5 以前
+
+ `url-loader` 可以将图片资源转化为 base64 并引用，减少页面请求图片资源的次数，从而提高页面的性能。但是，当图片较大时，编码的性能下降，就需要改成引用图片，此时 `url-loader` 会调用 `file-loader` （需安装）加载图片。
 
 详细用法参考官方文档：[https://webpack.js.org/loaders/url-loader/](https://webpack.js.org/loaders/url-loader/)
 
@@ -270,83 +307,104 @@ npm install --save-dev url-loader file-loader
 
 修改 `webpack.config.js`：
 
-```js
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-
-module.exports = {
-    entry: './src/index.js',
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
+```diff
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  
+  module.exports = {
+    // ...
     module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            },
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: '[name].[hash:7].[ext]'
-                }
-            }
-        ]
+      rules: [
+        {
+          test: /\.css$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ]
+        },
++       {
++         test: /\.(png|svg|jpe?g|gif)$/,
++         loader: 'url-loader',
++         options: {
++           limit: 10 * 1024,
++           name: 'img/[name].[hash:6][ext]'
++         }
+        }
+      ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        }),
-        new MiniCssExtractPlugin()
-    ],
-    mode: 'development'
-}
+      new HtmlWebpackPlugin({
+        template: 'index.html', // 用于编译的模板文件
+        filename: 'index.html'  // 编译后输出的文件名
+      }),
+      new MiniCssExtractPlugin()
+    ]
+  }
 ```
 
-当图片不超过10240Bytes，即10KB时，图片会被转成base64，当超过10KB时，则会在构建目录生成文件名追加哈希值的图片。
-
-修改 `index.html` 和 `src/style.css`：
-
-```html
-<body>
-    <h1 class="color-red">Webpack</h1>
-
-    <div class="logo"></div>
-</body>
-```
-
-```css
-.color-red {
-    color: #ff0000;
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-    background-image: url('logo.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-```
+当图片不超过 10KB 时，图片会被转成 base64，当超过 10KB 时，则会在构建目录生成文件名追加哈希值的图片。
 
 编译后页面显示图片，在 `dist/main.css` 中，背景图片已被转换成base64（本例使用图片小于10KB）。
 
-#### html-loader
 
-使用 `url-loader` 或者 `file-loader`，只能处理 css 文件中的背景图片，或者 js文件中 `Image` 对象的 `src` 属性，对于 html 文件中 `<img>` 的 `src` 属性引用的图片，需要使用 `html-loader`。
+
+##### webpack 5+
+
+webpack 5+ 使用资源模块（Asset Module）来加载资源，无需额外的 loader。webpack 5 资源模块类型：
+
+- `asset/resource` 发送一个单独的文件并导出 URL。之前通过使用 `file-loader` 实现。
+- `asset/inline` 导出一个资源的 data URI。之前通过使用 `url-loader` 实现。
+- `asset/source` 导出资源的源代码。之前通过使用 `raw-loader` 实现。
+- `asset` 在导出一个 data URI 和发送一个单独的文件之间自动选择。之前通过使用 `url-loader`，并且配置资源体积限制实现。
+
+为了实现与之前相同的效果，即小图片打包成 base64，大图片打包成单独的文件，我们可以直接选择 `asset` 类型：
+
+```diff
+  const path = require('path')
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist'),
++     assetModuleFilename: 'img/[name].[hash:8][ext]' // 资源模块打包文件名
+    },
+    module: {
+      rules: [
++       {
++         test: /\.(png|svg|jp?eg|gif)$/,
++         type: 'asset',
++         parser: {
++           dataUrlCondition: {
++             maxSize: 10 * 1024
++           }
++         }
++       }
+      ]
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: 'index.html', // 用于编译的模板文件
+        filename: 'index.html'  // 编译后输出的文件名
+      }),
+      new MiniCssExtractPlugin()
+    ]
+  }
+```
+
+不超过 10KB（默认8KB）的图片，将使用 `asset/inline` 编译成 base64，超过 10KB 的图片，将使用 `asset/resource` 打包成单独的文件。
+
+
+
+#### `<img>` 的 src 属性
+
+使用 `url-loader` 或者 `asset`，只能处理 css 文件中的背景图片，或者 js 文件中 `Image` 对象的 `src` 属性，对于 html 文件中 `<img>` 的 `src` 属性引用的图片，需要使用 `html-loader` （仍然需要有图片的 loader）。
 
 `html-loader`的详细用法参考官方文档：[https://webpack.js.org/loaders/html-loader/](https://webpack.js.org/loaders/html-loader/)
 
-安装 `html-loader`（解析图片需要先安装 `url-loader` 或 `file-loader`）：
+安装 `html-loader` ：
 
 ```bash
 npm install --save-dev html-loader
@@ -354,70 +412,65 @@ npm install --save-dev html-loader
 
 修改 `webpack.config.js`：
 
-```js
+```diff
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
-    entry: './src/index.js',
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    module: {
-        rules: [
-            {
-                test: /\.html$/,
-                use: 'html-loader'
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            },
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: '[name].[hash:7].[ext]'
-                }
-            }
-        ]
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        }),
-        new MiniCssExtractPlugin()
-    ],
-    mode: 'development'
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'img/[name].[hash:8][ext]' // 资源模块打包文件名
+  },
+  module: {
+    rules: [
++     {
++       test: /\.html$/,
++       use: 'html-loader'
++     },
+      {
+        test: /\.(png|svg|jp?eg|gif)$/,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 10 * 1024
+          }
+        }
+      }
+    ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html', // 用于编译的模板文件
+      filename: 'index.html'  // 编译后输出的文件名
+    }),
+    new MiniCssExtractPlugin()
+  ]
 }
 ```
 
-在 `index.html` 中使用 `<img>`：
+在 `index.html` 中使用 `<img>`， 并指定 `src` ：
 
 ```html
 <body>
-    <h1 class="color-red">Webpack</h1>
-
-    <div class="logo"></div>
-    <img src="./src/logo.png" />
+  <img src="./src/assets/img/edge.jpg" />
 </body>
 ```
 
-编译后 `dist/index.html` 中的 `<img>` 的 `src` 属性引用了 base64 格式的图片（不超过10KB），或者引用在 `dist` 中生成的图片。
+编译后 `dist/index.html` 中的 `<img>` 的 `src` 属性引用了 base64 格式的图片（不超过10KB），或者引用打包生成的中生成的图片。
+
+
 
 
 ### Babel
 
 Babel 是一个 JavaScript 的编译器，可以将 ES6 的代码转化为浏览器支持的 JavaScript 代码（通常是 ES5），从而在现有环境中运行。这就意味着，我们可以使用 ES6 的高级语法编写程序，而不依赖于浏览器是否支持。
 
-1.安装
+
+
+#### 1. 安装
 
 ```bash
 npm install --save-dev babel-loader @babel/core @babel/preset-env
@@ -426,47 +479,48 @@ npm install --save-dev babel-loader @babel/core @babel/preset-env
 修改 `webpack.config.js`：
 
 ```js
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-
 module.exports = {
-    // ...
-    module: {
-        rules: [
-            // ...
-            {
-                test: /\.js$/,
-                exclude: /(node_modules|bower_components)/,    // 排除node_modules目录
-                use: 'babel-loader'
-            }
-        ]
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html'
-        })
+  // ...
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: 'babel-loader',
+        exclude: /node_modules/
+      }
     ]
+  }
 }
 ```
 
-2.配置
 
-创建 `babel.config.js` 配置文件：
 
-```js
-module.exports = {
-    presets: ['@babel/preset-env']
+#### 2. 配置
+
+创建 `babel.config.json` 配置文件：
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": "> 1%, last 2 versions, not ie <= 8"
+      }
+    ]
+  ]
 }
 ```
 
-`@babel/preset-env` 是 Babel 提供的编译 ES6 的常用预设
+`@babel/preset-env` 是 Babel 提供的编译 ES6 的常用预设。
 
-> 注意：`babel.config.js` 和 `.babelrc` 配置文件的区别：
-`babel.config.js` 是作用于当前项目的全局配置
-`babelrc` 是只作用于当前路径的局部配置
+`targets` 指定目标环境，`@babel/preset-env` 会转义目标浏览器环境不支持的语法，更多浏览器配置参考：[browserslist](https://github.com/browserslist/browserslist)
 
-3.polyfill
 
-ES6 可以分为新语法和新的 API，`let`、`const`、箭头函数，解构赋值等都属于新语法，新增的对象或者新增的方法属于新的 API，例如 `Promise` 对象，`Array.includes()` 方法。Babel 默认只会转换新语法，不会转换新的API，新的 API 一般是通过引入 `polyfill` 来兼容环境。
+
+#### 3. core-js
+
+ES6 可以分为新语法和新的 API，`let`、`const`、箭头函数，解构赋值等都属于新语法，新增的对象或者新增的方法属于新的 API，例如 `Promise` 对象，`Array.includes()` 方法。Babel 默认只会转换新语法，不会转换新的API，新的 API 一般是通过引入 `core-js` 来兼容环境。
 
 安装 core-js：
 
@@ -474,103 +528,138 @@ ES6 可以分为新语法和新的 API，`let`、`const`、箭头函数，解构
 npm install core-js --save
 ```
 
-修改 `babel.config.js`：
+修改 `babel.config.json`：
 
-```js
-module.exports = {
-    presets: [
-        [
-            '@babel/preset-env',
-            {
-                useBuiltIns: 'usage', // 可选值 'entry' | 'usage'，'usage' 表示按需注入
-                corejs: 3
-            }
-        ]
+```diff
+  {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": "> 1%, last 2 versions, not ie <= 8",
++         "useBuiltIns": "usage", // 可选值 'entry' | 'usage' | false，'usage' 表示按需注入
++         "corejs": 3
+        }
+      ]
     ]
-}
+  }
 ```
 
-> Babel7.4 以后使用 `useBuiltIns` 代替 `@babel/polyfill` 来实现 ES6 新 API 的注入
+Babel 的详细用法参考后面的 Babel 文档或者官方文档：[https://www.babeljs.cn/](https://www.babeljs.cn/)。
 
-Babel 的详细用法参考后面的 Babel 文档或者官方文档：[https://www.babeljs.cn/](https://www.babeljs.cn/)
+webpack 5 编译后的模块默认使用箭头函数，如果目标浏览器不支持箭头函数，例如需要兼容 IE，则需要修改 `webpack.config.js` ：
 
-### eslint
+```diff
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist'),
++     // 模块打包不使用箭头函数
++     environment: {
++       arrowFunction: false
++     }
+    }
+  }
+```
 
-1. 安装相关的包
+
+
+### ESlint
+
+#### 1. 安装依赖
 
 ```sh
 npm install eslint eslint-loader eslint-friendly-formatter --save-dev
 ```
 
-2. 修改 webpack 配置文件 `webpack.config.js`：
+
+
+#### 2. 修改 webpack 配置文件
 
 ```js
 const path = require('path')
 
 module.exports = {
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'eslint-loader',
-                enforce: 'pre',
-                include: path.resolve(__dirname, 'src'),
-                options: {
-                    formatter: require('eslint-friendly-formatter')
-                }
-            }
-        ]
-    }
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        loader: 'eslint-loader',
+        enforce: 'pre',
+        include: path.resolve(__dirname, 'src'),
+        options: {
+          formatter: require('eslint-friendly-formatter')
+        }
+      }
+    ]
+  }
 }
 ```
 
-3. 创建 `.eslintrc.js` 配置文件：
 
-```js
-module.exports = {
-    root: true,
-    parserOptions: {
-        parser: 'babel-eslint',
-        sourceType: 'module',
-        ecmaVersion: 11
-    },
-    env: {
-        browser: true
-    },
-    extends: ['eslint:recommended'],
-    rules: {
-        
-    }
-}
+
+#### 3. 创建 `.eslintignore` 文件 
+
+创建 `.eslintignore` 文件，部分路径和文件不启用 ESLint 检查：
+
 ```
-
-如果需要使用流行风格指南 `standard`，需要安装以下包：
-
-```sh
-npm install --save-dev "eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard
-```
-
-然后修改 `.eslintrc.js` 的 `extends` 选项：
-
-```js
-module.exports = {
-    // ...
-    extends: ['standard'],
-}
-```
-
-4. 创建 `.eslintignore` 文件，部分路径和文件不启用 eslint 检查：
-
-```sh
 /dist/
 /*.js
 ```
 
-> 根目录下的配置相关的文件夹也应添加到该文件中
+根目录下的配置相关的文件夹，如果不希望启用 ESLint 检查，也应添加到该文件中。
 
-## plugins
+
+
+#### 4. 创建 `.eslintrc.js` 配置文件：
+
+```js
+module.exports = {
+  root: true,
+  parserOptions: {
+    parser: 'babel-eslint',
+    sourceType: 'module',
+    ecmaVersion: 11
+  },
+  env: {
+      browser: true
+  },
+  extends: ['eslint:recommended'],
+  rules: {
+      
+  }
+}
+```
+
+ESLint 更多用法参考： [ESLint中文文档 ](https://eslint.bootcss.com/docs/user-guide/getting-started)
+
+
+
+#### 5. 代码风格
+
+如果需要使用流行风格指南，例如： `standard`，需要安装相关的依赖：
+
+```sh
+npm install --save-dev eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-standard
+```
+
+然后修改 `.eslintrc.js` 的 `extends` 选项：
+
+```diff
+  module.exports = {
+-   extends: ['eslint:recommended'],
++   extends: ['standard'],
+  }
+```
+
+
+
+## 3. plugins
 
 插件是 webpack 的支柱功能，用于解决 loader 无法实现的其他事。
+
+
 
 ### HtmlWebpackPlugin
 
@@ -589,33 +678,43 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    // ...
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html', // 用于编译的模板文件
-            filename: 'index.html'  // 编译后输出的文件名       
-        })
-    ]
+  // ...
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html', // 用于编译的模板文件
+      filename: 'index.html'  // 编译后输出的文件名
+    })
+  ]
 }
 ```
 
 修改 `index.html`：
 
-```html
-<body>
-    <h1>Webpack</h1>
-</body>
+```diff
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpack</title>
+  </head>
+  <body>
+
++   <h1>HtmlWebpackPlugin</h1>
+-   <script src="./src/index.js"></script>
+  </body>
+  </html>
 ```
 
-添加了标题，并且去掉了原先脚本的引用，因为编译后会自动在 `<body>` 标签的底部注入脚本。
+添加标题，并且去掉了原先脚本的引用，因为编译后会自动在 `<body>` 标签的底部注入脚本。
 
-运行 `npm run build`，在 `dist` 目录下生成了 `index.html`，打开后显示“Webpack”标题。
+运行 `npm run build`，在 `dist` 目录下生成了 `index.html`，打开后显示“HtmlWebpackPlugin”。
+
+
 
 ### MiniCssExtractPlugin
 
-之前使用 `style-loader` 和 `css-loader`加载 css 文件的方法， 将 css 文件内嵌到 `bundle.js` 中，只有加载脚本文件的时候，才会将样式表插入到页面中。这就意味着，当样式表或者脚本文件较大时，需要花时间等待脚本文件下载完，样式表才会生效。优化的办法是使用 `MiniCssExtractPlugin`， 分离 css 文件和 js 文件，让浏览器可以并发下载资源，不过也会增加请求数量（webpack3 使用 `ExtractTextWebpackPlugin`分离 css 文件，webpack4 以后使用 `MiniCssExtractPlugin` ）。
-
-> `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR），不需要担心打包后文件过大的问题。除此之外，在 loader 链中也不应该有 style-loader。
+之前使用 `style-loader` 和 `css-loader` 加载 css 文件的方法， 将 css 文件内嵌到 `bundle.js` 中，只有加载脚本文件的时候，才会将样式表插入到页面中。这就意味着，当样式表或者脚本文件较大时，需要花时间等待脚本文件下载完，样式表才会生效。优化的办法是使用 `MiniCssExtractPlugin`， 分离 css 文件和 js 文件，让浏览器可以并发下载资源，不过也会增加请求数量。
 
 参考文档：[https://webpack.js.org/plugins/mini-css-extract-plugin](https://webpack.js.org/plugins/mini-css-extract-plugin)
 
@@ -627,152 +726,146 @@ npm install --save-dev mini-css-extract-plugin
 
 修改 `webpack.config.js`：
 
-```js
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+```diff
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
++ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-module.exports = {
+  module.exports = {
     // ...
     module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            },
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: '[name].[hash:7].[ext]'
-                }
-            }
-        ]
+      rules: [
+        {
+          test: /\.css$/,
+-         use: ['style-loader', 'css-loader']
++         use: [
++           MiniCssExtractPlugin.loader,
++           'css-loader'
++         ]
+      	}
+      ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        }),
-        new MiniCssExtractPlugin()
+      new HtmlWebpackPlugin({
+        template: 'index.html', // 用于编译的模板文件
+        filename: 'index.html'  // 编译后输出的文件名
+      }),
++     new MiniCssExtractPlugin()
     ],
     mode: 'development'
-}
+  }
 ```
 
 运行 `npm run build`，在 `dist`目录下生成 `main.css`，`dist/index.html` 文件在 `<head>` 标签中以 `<link>` 引入了样式表。
 
-## 开发环境和生产环境
+
+
+## 4. 开发环境和生产环境
 
 开发环境（development）和生产环境（production）的构建目标差异很大。在开发环境中，我们需要具有强大的、具有实时重新加载（live reloading）或热模块替换（hot module replacement）能力的 source map 和 localhost server。而在生产环境中，我们的目标则转向于关注更小的 bundle，更轻量的 source map，以及更优化的资源，以改善加载时间。由于要遵循逻辑分离，我们通常建议为每个环境编写彼此独立的 webpack 配置。
 
 以上涉及的概念会在接下来逐个详解。
 
+
+
 ### 区分开发环境和生产环境
 
-删除之前的 `webpack.config.js`，然后安装 `webpack-merge`：
+#### mode
 
-```bash
+`'production' | 'development' | none`， 默认为 `production`
+
+webpack 4 以后，可以通过 `mode` 来指定目标环境是开发环境，还是生产环境。`mode` 属性可以指定 `process.env.NODE_ENV`，这个值之前需要通过 `DefinePlugin` 来定义，许多 `library` 会根据这个变量的不同，来引用不同的代码。除此之外，配置 `mode`，webpack 还会根据目标环境自动添加和设置一些插件。
+
+
+
+#### 通用 webpack 配置
+
+为了提取通用的 webpack 配置，首先需要安装 `webpack-merge` ：
+
+```sh
 npm install --save-dev webpack-merge
 ```
 
-`webpack-merge` 用于提取公用的 webpack 配置内容。
-
-
-为了规范项目的目录，做，如下处理，`src/css` 存放原始 css 文件，`src/js` 存放原始 js 文件，`src/img` 存放静态图片，相关资源的引入和打包输出，也作出相应修改。
-
-创建通用 webpack 配置文件 `webpack.common.js`：
+删除之前的 `webpack.config.js` ，然后创建通用 webpack 配置文件 `webpack.common.js`：
 
 ```js
 const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
-    entry: './src/js/index.js',
-    output: {
-        filename: 'js/[name].[hash:7].js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    module: {
-        rules: [
-            {
-                test: /\.html$/,
-                use: 'html-loader'
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            },
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loaders: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: 'img/[name].[hash:7].[ext]'
-                }
-            }
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'img/[name].[hash:8][ext]' // 资源模块打包文件名
+  },
+  module: {
+    rules: [
+      {
+        test: /\.html$/,
+        use: 'html-loader'
+      },
+      {
+        test: /\.css/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader'
         ]
-    },
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[hash:7].css'
-        })
+      },
+      {
+        test: /\.(png|svg|jp?eg|gif)$/,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 10 * 1024
+          }
+        }
+      }
     ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html', // 用于编译的模板文件
+      filename: 'index.html'  // 编译后输出的文件名
+    }),
+    new MiniCssExtractPlugin()
+  ]
 }
 ```
 
 通用配置包括入口文件，输出配置，加载 css，加载图片等。
 
 
+
+#### 开发环境配置
+
 创建开发环境配置文件 `webpack.dev.js`：
 
 ```js
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
-    plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
-    ],
-    mode: 'development'
+  mode: 'development'
 })
 ```
+
+
+
+#### 生产环境配置
 
 创建生产环境配置文件 `webpack.prod.js`：
 
 ```js
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
-    plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
-    ],
-    mode: 'production'
+  mode: 'production'
 })
 ```
 
-### mode
 
-`'production' | 'development' | none`， 默认为 `production`
-
-webpack4 以后，可以通过 `mode` 来指定目标环境是开发环境，还是生产环境。`mode` 属性可以指定 `process.env.NODE_ENV`，这个值之前需要通过 `DefinePlugin` 来定义，许多 `library` 会根据这个变量的不同，来引用不同的代码。除此之外，配置 `mode`，webpack 还会根据目标环境自动添加和设置一些插件。
-
-> mode 启用的插件
 
 ### web 服务器以及 NPM 命令
 
@@ -784,70 +877,58 @@ webpack4 以后，可以通过 `mode` 来指定目标环境是开发环境，还
 npm install --save-dev webpack-dev-server
 ```
 
-修改开发环境的配置文件 `webpack.dev.js`，告诉开发服务器在哪里查找文件：
-
-```js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-
-module.exports = merge(common, {
-    plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
-    ],
-    devServer: {
-        contentBase: './dist'
-    },
-    mode: 'development'
-})
-```
-
-更多 `webpack-dev-server` 的配置参考官方文档：[https://webpack.js.org/configuration/dev-server/](https://webpack.js.org/configuration/dev-server/)
-
 修改 `package.json`，为开发环境和生产环境配置不同的 NPM 命令：
+
 ```json
 "scripts": {
-    "dev": "webpack-dev-server --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+  "dev": "webpack-dev-server --open --config webpack.dev.js",
+  "build": "webpack --config webpack.prod.js"
 },
 ```
 
-* 使用 `npm run dev` 命令启用开发环境，启用 `webpack-dev-server`，编译后会自动在浏览器中打开，再次修改代码并保存，浏览器会自动更新。
-* 使用 `npm run build` 命令构建生产环境，会创建 `dist` 目录并编译到此目录，上线前交付此目录即可。
+- 使用 `npm run dev` 命令启用开发环境，启用 `webpack-dev-server`，编译后会自动在浏览器中打开，再次修改代码并保存，浏览器会自动更新。
+- 使用 `npm run build` 命令构建生产环境，会创建 `dist` 目录并编译到此目录，上线前交付此目录即可。 
+
+`webpack-dev-server`  可以通过 `devServer` 选项进行配置：
+
+```js
+// webpack.dev.js
+const { merge } = require('webpack-merge')
+const common = require('./webpack.common.js')
+
+module.exports = merge(common, {
+  devServer: {
+    // open: true
+  },
+  mode: 'development'
+})
+```
+
+更多 `webpack-dev-server` 的配置参考官方文档：[DevServer | webpack 中文文档](https://webpack.docschina.org/configuration/dev-server/)
+
 
 
 ### source-map(devtool)
 
 当 webpack 打包源代码时，可能会很难追踪到错误和警告在源代码中的原始位置。为了更容易地追踪错误和警告，JavaScript 提供了 source map 功能，将编译后的代码映射回原始源代码。webpack 通过 `devtool` 属性来配置不同的 `source-map` 值。
 
-![图片](./images/webpack/source-map.png)
+![图片](./docs/images/webpack/source-map.png)
 
-具体的 `source-map` 值可参考官方文档：[https://webpack.js.org/configuration/devtool/](https://webpack.js.org/configuration/devtool/)
+具体的 `source-map` 值可参考官方文档：[Devtool | webpack 中文文档 ](https://webpack.docschina.org/configuration/devtool/)
 
-使用不同的 `source-map` 值，代码的构建速度和代码映射是不一样的。对于开发环境，通常希望以增加编译后包的体积为代价获取更快速的 source map，但是对于生产环境，则希望分离和压缩模块，获得精确的 source map。
+> 验证 devtool 名称时， devtool 字符串需要按照一定的顺序模式书写， 模式是： `[inline-|hidden-|eval-][nosources-][cheap-[module-]]source-map`.
+
+使用不同的 `source-map` 值，代码的构建速度和代码映射是不一样的。对于开发环境，通常希望以增加编译后包的体积为代价，获取编译较快速且调试友好的 source map，但是对于生产环境，则希望分离和压缩模块，获得体积较小且不能有原始源代码（可以有行列信息供调试）的 source map。
 
 修改开发环境配置文件 `webpack.dev.js`：
 
 ```js
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
-    plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
-    ],
-    devtool: 'cheap-module-eval-source-map',
-    devServer: {
-        contentBase: './dist'
-    },
-    mode: 'development'
+  devtool: 'eval-cheap-module-source-map',
+  mode: 'development'
 })
 ```
 
@@ -856,142 +937,173 @@ module.exports = merge(common, {
 ```js
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
-    plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
-    ],
-    devtool: 'nosources-source-map',
-    mode: 'production'
+  devtool: 'cheap-module-source-map',
+  mode: 'production'
 })
 ```
 
+
+
 ### 清理 dist 文件夹（生产环境）
 
-在构建生产环境时，会在 `dist` 目录下生成编译后的文件。假如我们删除 `src` 目录下的某些文件，再次编译后之前的代码仍会遗留在 `dist` 文件夹中，导致 `dist` 文件夹相当杂乱。比较推荐的做法是使用 `clean-webpack-plugin` 插件，每次构建前清理 `dist` 文件夹。
+在构建生产环境时，会在 `dist` 目录下生成编译后的文件。假如我们删除 `src` 目录下的某些文件，再次编译后之前的代码仍会遗留在 `dist` 文件夹中，导致 `dist` 文件夹相当杂乱。
 
-安装 `clean-webpack-plugin` 插件：
+webpack 5.20+，可以通过 `output.clean = true ` 来清空输出目录。
+
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
+
+  module.exports = merge(common, {
++   output: {
++     clean: true
++   },
+    devtool: 'cheap-module-source-map',
+    mode: 'production'
+  })
+```
+
+Webpack 版本低于 5.20.0，需要安装 `clean-webpack-plugin` 插件：
 
 ```bash
 npm install --save-dev clean-webpack-plugin
 ```
 
-修改生产环境配置文件 `webpack.prod.js`：
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
++ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
-```js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-
-module.exports = merge(common, {
-    plugins: [
-        new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        })
-    ],
-    devtool: 'source-map',
+  module.exports = merge(common, {
++   plugins: [
++     new CleanWebpackPlugin()
++   ],
+    devtool: 'cheap-module-source-map',
     mode: 'production'
-})
+  })
 ```
 
 `clean-webpack-plugin` 的详细配置参考：[https://www.npmjs.com/package/clean-webpack-plugin](https://www.npmjs.com/package/clean-webpack-plugin)。
+
+
 
 ### 编译 CSS
 
 * 开发环境：使用 `css-loader` 和 `style-loader` 编译 CSS。
 
-* 生产环境：使用 `css-loader` 和 `MiniCssExtractPlugin` 编译CSS。`MiniCssExtractPlugin` 的详细用法参考 `plugins`。
+* 生产环境：使用 `css-loader` 和 `MiniCssExtractPlugin` 编译 CSS。`MiniCssExtractPlugin` 的详细用法参考 `plugins`。
 
-> `MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR）（见下），不需要担心打包后文件过大的问题。除此之外，在 loader 链中，`style-loader` 和 `MiniCssExtractPlugin` 不能同时使用。
+`MiniCssExtractPlugin` 一般只用于生产环境，开发环境一般会启用模块热替换（HMR）（见下），不需要担心打包后文件过大的问题。除此之外，在 loader 链中，`style-loader` 和 `MiniCssExtractPlugin` 不能同时使用。
 
 修改通用配置文件 `webpack.common.js`：
 
-```js
-module.exports = {
+```diff
+  const path = require('path')
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
+- const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist'),
+      assetModuleFilename: 'img/[name].[hash:8][ext]' // 资源模块打包文件名
+    },
     module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',    // MiniCssExtractPlugin.loader -> 'style-loader'
-                    'css-loader'
-                ]
+      rules: [
+        {
+          test: /\.html$/,
+          use: 'html-loader'
+        },
+-       {
+-         test: /\.css$/,
+-         use: [
+-           MiniCssExtractPlugin.loader,
+-           'css-loader'
+-         ]
+-       },
+        {
+          test: /\.(png|svg|jp?eg|gif)$/,
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 10 * 1024
             }
-        ]
+          }
+        }
+      ]
     },
     plugins: [
-        // 移除 MiniCssExtractPlugin 插件
-        // new MiniCssExtractPlugin({
-        //     filename: 'css/[name].[hash].css'
-        // })
+      new HtmlWebpackPlugin({
+        template: 'index.html', // 用于编译的模板文件
+        filename: 'index.html'  // 编译后输出的文件名
+      }),
+-     new MiniCssExtractPlugin()
     ]
-}
+  }
 ```
 
 修改开发环境配置文件 `webpack.dev.js`：
 
-```js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
+```diff
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
 
-module.exports = merge(common, {
-    module: {
-        // 添加 css loader
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    'style-loader',
-                    'css-loader'
-                ]
-            }
-        ]
-    },
+  module.exports = merge(common, {
++   module: {
++     rules: [
++       {
++         test: /\.css$/,
++         use: ['style-loader', 'css-loader']
++       }
++     ]
++   },
+    devtool: 'eval-cheap-module-source-map',
     mode: 'development'
-})
+  })
 ```
 
 修改生产环境配置文件 `webpack.prod.js`：
 
-```js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
+```diff
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
++ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-module.exports = merge(common, {
-    module: {
-        // 使用 MiniCssExtractPlugin.loader
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            }
-        ]
+  module.exports = merge(common, {
+    output: {
+      clean: true
     },
-    plugins: [
-        // 添加 MiniCssExtractPlugin
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[hash].css'
-        })
-    ],
++   module: {
++     rules: [
++       {
++         test: /\.css$/,
++         use: [
++           MiniCssExtractPlugin.loader,
++           'css-loader'
++         ]
++       }
++     ]
++   },
++   plugins: [
++     new MiniCssExtractPlugin()
++   ],
+    devtool: 'cheap-module-source-map',
     mode: 'production'
-})
+  })
 ```
 
-### 最小化 css 代码（生产环境）
+
+
+### 最小化 CSS 代码（生产环境）
 
 对于生产环境的 css，我们除了移除重复代码，还应该最小化/压缩 css 代码，移除空格和换行符，减少代码体积。 
 
-webpack4 以后，使用 `css-minimizer-webpack-plugin` 插件来最小化 css 代码。
+webpack 4 以后，使用 `css-minimizer-webpack-plugin` 插件来最小化 css 代码。
 
 详细用法参考：[https://webpack.js.org/plugins/css-minimizer-webpack-plugin/](https://webpack.js.org/plugins/css-minimizer-webpack-plugin/)
 
@@ -1003,6 +1115,63 @@ npm install css-minimizer-webpack-plugin --save-dev
 
 修改生产环境配置文件，引入插件：
 
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
++ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+
+  module.exports = merge(common, {
+    output: {
+      clean: true
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ]
+        }
+      ]
+    },
+    plugins: [
+      new MiniCssExtractPlugin(),
++     new CssMinimizerPlugin()
+    ],
+    devtool: 'cheap-module-source-map',
+    mode: 'production'
+  })
+```
+
+
+
+### 模块热替换（HMR）（开发环境）
+
+在构建开发环境时，模块热替换允许在运行时更新各种模块，而无需进行完全刷新。
+
+`webpack-dev-server` 的 `devServer.hot` 属性可以设置是否开启热更新，默认为 `true` 。
+
+
+
+### 打包分析器（webpack-bundle-analyzer）（生产环境）
+
+`webpack-bundle-analyzer` 插件可以将打包后的结果以矩形树图的方式进行可视化显示，方便我们进行模块分析和性能优化。
+
+详细用法参考：[https://github.com/webpack-contrib/webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
+
+![图片](./docs/images/webpack/bundle-analyzer.gif)
+
+1. 安装插件
+
+```sh
+npm install webpack-bundle-analyzer --save-dev
+```
+
+2. 为了和生产环境正常打包区分，我们可以另外定义一个 webpack 配置文件，然后引入 `webpack-bundle-analyzer` 。这里我们采用另外一种方法，按需启用，如果运行 `npm run build --report` ，则引入插件：
+
 ```js
 // webpack.prod.js
 const { merge } = require('webpack-merge')
@@ -1011,91 +1180,38 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
 const webpackConfig = merge(common, {
-    module: {
-        rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            }
+  output: {
+    clean: true
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader'
         ]
-    },
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[contenthash].css'
-        }),
-        new CssMinimizerPlugin()
-    ],
-    mode: 'production'
+      }
+    ]
+  },
+  plugins: [
+    new MiniCssExtractPlugin(),
+    new CssMinimizerPlugin()
+  ],
+  devtool: 'cheap-module-source-map',
+  mode: 'production'
 })
 
-module.exports = webpackConfig
-```
-
-> 注意：在 webpack3 中，使用 `optimize-css-assets-webpack-plugin` 插件来最小化 css 代码。
-
-### 模块热替换（HMR）（开发环境）
-
-在构建开发环境时，模块热替换允许在运行时更新各种模块，而无需进行完全刷新。
-
-修改 开发环境配置文件 `webpack.dev.js`：
-
-```js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
-const webpack = require('webpack')
-
-module.exports = merge(common, {
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()    // 引入 HMR 插件
-    ],
-    devServer: {
-        contentBase: './dist',
-        hot: true    // webpack-dev-server 的 hot 选项设置为true
-    },
-    mode: 'development'
-})
-```
-
-### 打包分析器（webpack-bundle-analyzer）（生产环境）
-
-`webpack-bundle-analyzer` 插件可以将打包后的结果以矩形树图的方式进行可视化显示，方便我们进行模块分析和性能优化。
-
-详细用法参考：[https://github.com/webpack-contrib/webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)
-
-![图片](./images/webpack/bundle-analyzer.gif)
-
-1. 安装插件
-
-```sh
-npm install webpack-bundle-analyzer --save-dev
-```
-
-2. 在生产环境配置文件 `webpack.prod.js` 中引入插件，为此，需要区分配置定义和导出
-
-```js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
-
-// 抽离配置定义
-const webpackConfig = merge(common, {
-    // ...
-    mode: 'production'
-})
-
-// npm run build --report（按需启用，当指定 --report 参数时启用插件）
+// （按需启用，当指定 --report 参数时启用插件）
 if (process.env.npm_config_report) {
-    const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-    webpackConfig.plugins.push(new BundleAnalyzerPlugin())
+  const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+  webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-// 导出
 module.exports = webpackConfig
 ```
 
-3.运行编译命令
+3. 运行编译命令
 
 ```sh
 npm run build --report
@@ -1103,79 +1219,106 @@ npm run build --report
 
 编译后自动打开分析页面，可以直观看到各个模块打包后的相对大小，我们就可以有针对性地对模块进行优化。除此之外，还能看到各个模块代码的原始大小（stat）、编译后的大小（parsed）以及压缩后的大小（Gzipped）。
 
-## 浏览器缓存
+
+
+### 浏览器缓存
 
 浏览器具有缓存技术，会将访问过的网页资源（例如 css 文件、js 文件以及图片等）缓存到本地，下次访问网页的相同资源时，就会使用缓存，减少网络请求，加快页面加载速度。缓存技术的存在，对提升网页加载性能是有利的，但是对我们更新代码就不那么友好了。我们更新了代码，由于浏览器缓存，用户浏览到的仍然是旧版本的页面。
 
-### 文件名哈希值
+
+
+#### 文件名哈希值
 
 每次更新代码时，通过对打包的文件名追加 `hash`，使得文件名与之前不一致，浏览器就不会因为缓存而忽略更新。
 
-在 webpack 中，有三种类型的 `hash`，分别是 `[hash]`、`[chunkhash]` 和 `[contenthash]`
+在 webpack 中，`filname` 有三种类型的 `hash`，分别是 `[fullhash]`、`[chunkhash]` 和 `[contenthash]` 。
 
-* `[hash]`
+> webpack 5 中，`[hash]` 已被废弃，使用 `[fullhash]` 代替。
 
-`[hash]` 是项目级别的，即同一个项目中的所有文件共用一个哈希值，这就产生一个问题，假如只修改某一个文件，所有文件名的哈希值都会更新，每次更新后，浏览器缓存都会失效，用户就要访问重新所有资源，网页的性能因此下降。
+* `[fullhash]`
+
+`[fullhash]` 是项目级别的，即同一个项目中的所有文件共用一个哈希值，这就产生一个问题，假如只修改某一个文件，所有文件名的哈希值都会更新，每次更新后，浏览器缓存都会失效，用户就要访问重新所有资源，网页的性能因此下降。
 
 
-```js
-// webpack.common.js
-const path = require('path')
+```diff
+  // webpack.common.js
+  const path = require('path')
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = {
-    entry: './src/js/index.js',
+  module.exports = {
+    entry: './src/index.js',
     output: {
-        filename: 'js/[name].[hash].js',    // hash
-        path: path.resolve(__dirname, 'dist')
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loaders: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: 'img/[name].[hash].[ext]'    // hash
-                }
-            }
-        ]
+-     filename: 'bundle.js',
++     filename: 'js/[name].[fullhash:8].js',
+      path: path.resolve(__dirname, 'dist'),
+      assetModuleFilename: 'img/[name].[hash:8][ext]' // 资源模块打包文件名
     }
-}
+  }
 ```
 
-```js
-// webpack.prod.js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
-module.exports = merge(common, {
+  module.exports = merge(common, {
+    // ...
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[hash].css'    // hash
-        })
+-     new MiniCssExtractPlugin(),
++     new MiniCssExtractPlugin({
++       filename: 'css/[name].[fullhash:8].css'
++     }),
+      new CssMinimizerPlugin()
     ],
+    devtool: 'cheap-module-source-map',
     mode: 'production'
-})
+  })
 ```
 
 * `[chunkhash]` 根据不同的入口文件进行依赖文件解析、构建对应的 chunk，生成对应的哈希值。这样不同的文件就会生成不同的哈希值，只更新一个文件，不会影响其他文件的缓存（这种说法并不准确，下面会说明）。
 
-```js
-// webpack.prod.js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
+```diff
+  // webpack.common.js
+  const path = require('path')
+  const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = merge(common, {
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[chunkhash].css'    // chunkhash
-        })
-    ],
-    mode: 'production'
-})
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+-     filename: 'js/[name].[fullhash:8].js',
++     filename: 'js/[name].[chunkhash:8].js',
+      path: path.resolve(__dirname, 'dist'),
+      assetModuleFilename: 'img/[name].[hash:8][ext]' // 资源模块打包文件名
+    }
+  }
 ```
 
-> 注意： 在 `webpack.common.js` 中，`output.filename` 仍然保留 `[hash]`，这是因为开发环境中的 `HotModuleReplacementPlugin` 插件会和 `chunkhash` 冲突。除此之外，`[chunkhash]` 只适用于 js 和 css，对图片不生效，所以 `url-loader` 中也保留 `[hash]`
+
+
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+
+  module.exports = merge(common, {
+    // ...
+    plugins: [
+      new MiniCssExtractPlugin({
+-       filename: 'css/[name].[fullhash:8].css'
++       filename: 'css/[name].[chunkhash:8].css'
+      }),
+      new CssMinimizerPlugin()
+    ],
+    devtool: 'cheap-module-source-map',
+    mode: 'production'
+  })
+```
+
+> `[chunkhash]` 只适用于 js 和 css，对图片不生效，所以 `assetModuleFilename` 中也保留 `[hash]`
 
 `[chunkhash]` 仍然有个问题，如果将 css 文件导入到 js 文件中，修改 js 文件，css 文件的哈希值也都会变化，没有起到缓存的作用。
 
@@ -1185,77 +1328,67 @@ module.exports = merge(common, {
 
 综合例子：
 
-```js
-// webpack.common.js
-const path = require('path')
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
-module.exports = {
-    entry: './src/js/index.js',
-    output: {
-        filename: 'js/[name].[hash].js',    // hash
-        path: path.resolve(__dirname, 'dist')
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(png|svg|jpe?g|gif)$/,
-                loaders: 'url-loader',
-                options: {
-                    limit: 10240,
-                    name: 'img/[name].[hash].[ext]'    // hash
-                }
-            }
-        ]
-    }
-}
-```
-
-```js
-// webpack.prod.js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
-
-module.exports = merge(common, {
+  module.exports = merge(common, {
+    // ...
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'css/[name].[contenthash].css'    // contenthash
-        })
+      new MiniCssExtractPlugin({
+-       filename: 'css/[name].[chunkhash:8].css'
++     	filename: 'css/[name].[contenthash:8].css'
+      }),
+      new CssMinimizerPlugin()
     ],
+    devtool: 'cheap-module-source-map',
     mode: 'production'
-})
+  })
 ```
+
+
 
 针对生产环境中的 `MiniCssExtractPlugin` 插件，编译 css 代码时，使用 `[contenthash]`。这样，修改某个 js 文件，只改变对应模块的哈希值，该 js 文件引入的 css 文件的哈希值不会改变。
 
-### 提取模板/代码分离（生产环境）
+
+
+#### 提取模板/代码分离（生产环境）
 
 通常我们的项目中会包含三种类型的代码：
 
 * 自己或者团队编写的业务代码
-
 * 第三方库，例如 lodash 和 vue
-
 * webpack 的 runtime 和 manifest，管理所有模块的交互
 
-#### Runtime 
+
+
+##### Runtime 
+
 > runtime，以及伴随的 manifest 数据，主要是指：在浏览器运行时，webpack 用来连接模块化的应用程序的所有代码。runtime 包含：在模块交互时，连接模块所需的加载和解析逻辑。包括浏览器中的已加载模块的连接，以及懒加载模块的执行逻辑。
 
-#### Manifest
+
+
+##### Manifest
+
 > 当编译器(compiler)开始执行、解析和映射应用程序时，它会保留所有模块的详细要点。这个数据集合称为 "Manifest"，当完成打包并发送到浏览器时，会在运行时通过 Manifest 来解析和加载模块。无论你选择哪种模块语法，那些 import 或 require 语句现在都已经转换为 `__webpack_require__` 方法，此方法指向模块标识符(module identifier)。通过使用 manifest 中的数据，runtime 将能够查询模块标识符，检索出背后对应的模块。
 
 在实际开发中，项目中的第三方库基本是不会变化的。然而，webpack 默认会把业务代码，manifest 和 第三方库代码打包到同一个文件中，我们修改业务代码的时候，整个文件重新编译，缓存也会失效，浏览器需要重新下载整个文件，性能比较低。因此，我们一般会把 manifest 和 第三方库提取到单独的文件中。
 
-#### 代码分离之前
+
+
+##### 代码分离之前
 
 为了测试，首先，安装和引入第三方组件库 `lodash`：
 
 ```sh
-npm install --save-dev lodash
+npm install lodash
 ```
 
 ```js
 // src/js/index.js
-import '../css/style.css'
 import { indexOf } from 'lodash'
 
 console.log('Hello Webpack')
@@ -1264,64 +1397,86 @@ console.log(indexOf([1, 2, 3], 2))
 
 运行 `npm run build` 命令，可以看到打包信息：
 
-![图片](./images/webpack/code-splitting-01.png)
+js 代码都打包到 `js/main.xxx.js` 一个文件中，并且 `Chunk Names` 只有 `main`。
 
-js 代码都打包到 `main.xxx.js` 一个文件中，并且 `Chunk Names` 只有 `main`。
 
-#### 代码分离
 
-首先，指定 `optimization.runtimeChunk` 为 `'single'`，提取 `manifest` 模板：
+##### 入口起点
 
-```js
-// webpack.prod.js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
 
-const webpackConfig = merge(common, {
-    optimization: {
-        runtimeChunk: 'single'
-    },
+
+##### 动态导入
+
+
+
+##### splitChunks
+
+```diff
+  // webpack.prod.js
+  const { merge } = require('webpack-merge')
+  const common = require('./webpack.common.js')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+
+  module.exports = merge(common, {
+    // ...
++   optimization: {
++     runtimeChunk: 'single',
++     splitChunks: {
++       chunks: 'all',
++       cacheGroups: {
++         vender: {
++           test: /[\\/]node_modules[\\/]/,
++           name: 'venders'
++         }
++       }
++     }
++   },
+    devtool: 'cheap-module-source-map',
     mode: 'production'
-})
-
-module.exports = webpackConfig
+  })
 ```
 
-然后，配置 `optimization.splitChunks.cacheGroups` 分离第三方库代码：
 
-```js
-// webpack.prod.js
-const { merge } = require('webpack-merge')
-const common = require('./webpack.common.js')
 
-const webpackConfig = merge(common, {
-    optimization: {
-        runtimeChunk: 'single',
-        splitChunks: {
-            cacheGroups: {
-                vender: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'venders',
-                    chunks: 'all'
-                }
-            }
-        }
-    },
-    mode: 'production'
-})
+运行 `npm run build` ，可以看到，打包后的 js 代码包含 `main.xxx.js`（业务代码）、`runtime.xxx.js`（runtime 代码）和 `venders.xxx.js`（第三方库代码）， `Chunk Names` 也包含了 `main`、`runtime` 和 `venders`，说明已经实现了代码分离。
 
-module.exports = webpackConfig
+
+
+## 5. 其他
+
+### .gitignore
+
+一般项目根目录都需要一个 `.gitignore` 文件，告诉 Git 有哪些文件不需要加入到版本管理中，例如项目依赖、项目编译后的目录、编辑器文件等。
+
+```
+.DS_Store
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 ```
 
-运行 `npm run build`。
 
-![图片](./images/webpack/code-splitting-02.png)
 
-可以看到，打包后的 js 代码包含 `main.xxx.js`（业务代码）、`runtime.xxx.js`（runtime 代码）和 `venders.xxx.js`（第三方库代码）， `Chunk Names` 也包含了 `main`、`runtime` 和 `venders`，说明已经实现了代码分离。
-
-> webpack4 以后，使用 `optimization.splitChunks` 来分离代码，webpack4 以前，使用 `CommonsChunkPlugin` 插件来实现，参考 [https://www.webpackjs.com/guides/caching/](https://www.webpackjs.com/guides/caching/)
-
-## externals 引入 cdn 资源
+### externals 引入 cdn 资源
 
 webpack 中，我们使用框架或第三方插件，通常是通过 npm 安装之后，然后 `import` 导入，这样，这些代码库也会被打包到我们的项目中，导致打包后的文件过大。
 
@@ -1334,8 +1489,8 @@ webpack 中，我们通过 `externals` 属性，以外部扩展的形式引入�
 ```html
 <body>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.1/dist/vue-router.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-router@3.0.1/dist/vue-router.min.js"></script>
 </body>
 ```
 
@@ -1343,9 +1498,9 @@ webpack 中，我们通过 `externals` 属性，以外部扩展的形式引入�
 
 ```js
 module.exports = {
-    externals: {
-        vue: 'Vue',
-        'vue-router': 'VueRouter'
-    }
+  externals: {
+    vue: 'Vue',
+    'vue-router': 'VueRouter'
+  }
 }
 ```
