@@ -23,15 +23,15 @@ module.exports = {
         use: 'babel-loader',
         exclude: /node_modules/
       },
-      {
-        test: /\.js$/,
-        loader: 'eslint-loader',
-        enforce: 'pre',
-        include: path.resolve(__dirname, 'src'),
-        options: {
-          formatter: require('eslint-friendly-formatter')
-        }
-      },
+      // {
+      //   test: /\.js$/,
+      //   loader: 'eslint-loader',
+      //   enforce: 'pre',
+      //   include: path.resolve(__dirname, 'src'),
+      //   options: {
+      //     formatter: require('eslint-friendly-formatter')
+      //   }
+      // },
       {
         test: /\.(png|svg|jp?eg|gif)$/,
         type: 'asset',

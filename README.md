@@ -256,6 +256,81 @@ import './style.less'
 
 
 
+### postcss（autoprefixer）
+
+为了使 css 兼容不同的浏览器，需要通过 `postcss` 来自动添加产商前缀。
+
+首先，安装相关依赖：
+
+```sh
+npm install --save-dev postcss postcss-loader postcss-preset-env
+```
+
+> `post-preset-env` 中包含了 `autoprefixer` ，不需要额外安装。
+
+修改 webpack 配置文件：
+
+```diff
+  module.exports = {
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: ['style-loader','css-loader']
+        },
+        {
+          test: /\.less$/,
+          use: [
+            'style-loader',
+            'css-loader',
++           'postcss-loader'
+            'less-loader'
+          ]
+        }
+      ]
+    }
+  }
+```
+
+`postcss-loader` 需要在 `css-loader` 之前调用，预处理器的加载器之后调用，由于 webpack 加载器是从后往前调用，因此 `postcss-loader` 的书写位置在 `css-loader` 之后，预处理器的加载器之前。
+
+新增 `postcss.config.js` 配置文件：
+
+```js
+module.exports = {
+  plugins: [
+    'postcss-preset-env'
+  ]
+}
+```
+
+修改 `package.json` ，通过 `browserslist` 设置兼容的浏览器：
+
+```json
+{
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
+```
+
+修改样式文件：
+
+```diff
+  .color-red {
+    color: #ff0000;
++   transform: scale(1.1);
+  }
+```
+
+重新编译项目，编译后的样式为 `transform` 添加了 `-webkit-` 前缀。
+
+`postcss-loader` 的更多用法参考： [postcss-loader | webpack 中文文档](https://webpack.docschina.org/loaders/postcss-loader/) 。
+
+
+
 ### 图片
 
 #### CSS 背景图片或者 JS 图片对象
@@ -514,7 +589,7 @@ module.exports = {
 
 `@babel/preset-env` 是 Babel 提供的编译 ES6 的常用预设。
 
-`targets` 指定目标环境，`@babel/preset-env` 会转义目标浏览器环境不支持的语法，更多浏览器配置参考：[browserslist](https://github.com/browserslist/browserslist)
+`targets` 指定目标环境， `@babel/preset-env` 会转义目标浏览器环境不支持的语法，除此之外，目标环境也可以通过`package.json` 的 `browserslist`  来指定，更多浏览器配置参考：[browserslist](https://github.com/browserslist/browserslist) 。
 
 
 
